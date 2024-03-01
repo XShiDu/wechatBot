@@ -20,7 +20,7 @@ class ChatBot():
             model=self.model,  # 填写需要调用的模型名称
             messages=self.message,
         )
-        res = str(response.choices[0].message).split('role')[0][9:-2]
+        res = response.choices[0].message.content
         self.message.append({"role": "assistant", "content": res})
         return res
 
