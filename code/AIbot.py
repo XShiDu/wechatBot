@@ -21,6 +21,7 @@ class ChatBot():
             messages=self.message,
         )
         res = str(response.choices[0].message).split('role')[0][9:-2]
+        self.message.append({"role": "assistant", "content": res})
         return res
 
     def chat(self, input):
