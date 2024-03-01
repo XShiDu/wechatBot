@@ -4,7 +4,7 @@ from flask import Flask
 from chat_bot import Bot
 import yaml
 
-with open('./yamlData.yml', 'r', encoding='utf-8') as f:
+with open('./api_config.yml', 'r', encoding='utf-8') as f:
     apis = yaml.load(f.read(), Loader=yaml.FullLoader)
 
 bot = Bot(apis)
