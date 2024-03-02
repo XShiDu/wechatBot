@@ -30,7 +30,7 @@ def index():
     elif request.method == "POST":
         UserContent, ToUsere, FromUser = bot.post_receive(request)
         # 创建子线程，如果没来得及处理，就主线程先回复，子线程将处理结果加入session
-        sub_thread = threading.Thread(target=apply, args=(UserContent, ToUsere, FromUser))
+        sub_thread = threading.Thread(target=apply, args=(UserContent,))
         sub_thread.start()
 
         # 主线程等待子线程4秒
