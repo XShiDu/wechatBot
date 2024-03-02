@@ -66,11 +66,11 @@ class Bot:
         response.content_type = 'application/xml'
         return response
 
-    def post_time_out(self, count):
+    def post_time_out(self, count, UserContent):
         # 该函数用于响应用户输入
         #返回要回答的消息类型和消息
         if count == 3:
-            res = "回复时间过长，超出微信接口响应时间，请等待几秒后重试或换一种方式提问，如在提问最后加上'回答不超过100字'"
+            res = f"您的输入：{UserContent}回复时间过长，超出微信接口响应时间，请等待几秒后重试或换一种方式提问，如在提问最后加上'回答不超过100字'"
         else:
             res = '请稍等，大模型生成回答中...'
         return res

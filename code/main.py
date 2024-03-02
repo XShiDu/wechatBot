@@ -50,7 +50,7 @@ def index():
             else:
                 # 判定是不是最后一次请求
                 if have_post_count == 3:
-                    res = bot.post_make_response(bot.post_time_out(3), ToUsere, FromUser)
+                    res = bot.post_make_response(bot.post_time_out(3, UserContent), ToUsere, FromUser)
                     # 重置请求次数
                     post_count.pop(UserContent)
                 else:
