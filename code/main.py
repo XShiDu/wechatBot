@@ -43,8 +43,8 @@ def index():
             have_post_count = post_count.get(UserContent, 1)
             # 如果前面的请求已经生成了答案
             if have_answer:
-                session.pop('UserContent')
-                post_count.pop('UserContent')
+                session.pop(UserContent)
+                post_count.pop(UserContent)
                 return bot.post_make_response(have_answer, ToUsere, FromUser)
             # 若没有生成答案
             else:
@@ -52,7 +52,7 @@ def index():
                 if have_post_count == 3:
                     res = bot.post_make_response(bot.post_time_out(3), ToUsere, FromUser)
                     # 重置请求次数
-                    post_count.pop('UserContent')
+                    post_count.pop(UserContent)
                 else:
                     res = bot.post_make_response(bot.post_time_out(have_post_count), ToUsere, FromUser)
                     # 请求次数+1
