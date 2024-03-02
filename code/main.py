@@ -58,7 +58,6 @@ def index():
                 res = session[UserContent]
                 # 清除缓存
                 session.pop(UserContent)
-            return bot.post_make_response(res, ToUsere, FromUser)
         # 是第二次请求，第一次过期了
         elif front_post_count == 1:
             # 等待4s
@@ -74,7 +73,6 @@ def index():
                 post_count[UserContent] = 2
                 res = bot.post_time_out(1, UserContent)
                 time.sleep(1)
-            return bot.post_make_response(res, ToUsere, FromUser)
         # 是第三次请求了， 第二次请求期间没有得到响应，不管有没有，都返回答案
         else:
             # 等待4s
@@ -89,7 +87,7 @@ def index():
                 res = bot.post_time_out(2, UserContent)
             # 最后一次请求，清除请求计数缓存
             post_count.pop(UserContent)
-            return bot.post_make_response(res, ToUsere, FromUser)
+        return bot.post_make_response(res, ToUsere, FromUser)
 
 
 
