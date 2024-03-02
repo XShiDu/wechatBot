@@ -28,7 +28,7 @@ def index():
         if sub_thread.is_alive():
             return bot.post_apply(request)
         else:
-            return 'sucess'
+            return 'success'
 
 
 if __name__ == "__main__":
