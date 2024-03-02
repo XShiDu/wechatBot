@@ -40,31 +40,24 @@ class Bot:
             return_code = echostr
         return return_code
 
-    def post_apply(self, Content, ToUserName, FromUserName):
-        # 该函数用于响应用户输入
-        xml = f'<xml><ToUserName><![CDATA[{FromUserName}]]></ToUserName>' \
-              f'<FromUserName><![CDATA[{ToUserName}]]></FromUserName>' \
-              f'<CreateTime>{str(int(time.time()))}</CreateTime>'
+    def post_apply(self, Content):
         #返回要回答的消息类型和消息
         MsgType, res = self.bot.chat(Content)
-        xml += f'<MsgType><![CDATA[{MsgType}]]></MsgType>' \
-               f'<Content><![CDATA[{res}]]></Content></xml>'
+        return res
 
-        print(f'time:{time.time()}\tusername:{ToUserName}\treceivename:{FromUserName}\tcontent:{res}')
-        response = make_response(xml)
-        response.content_type = 'application/xml'
-        return response
-
-    def post_time_out(self, count, ToUserName, FromUserName):
+    def post_make_response(self, res, ToUserName, FromUserName):
+        '''
+        :param res: 回答
+        :param ToUserName:
+        :param FromUserName:
+        :return:
+        '''
         # 该函数用于响应用户输入
         xml = f'<xml><ToUserName><![CDATA[{FromUserName}]]></ToUserName>' \
               f'<FromUserName><![CDATA[{ToUserName}]]></FromUserName>' \
               f'<CreateTime>{str(int(time.time()))}</CreateTime>'
         #返回要回答的消息类型和消息
-        if count == 3:
-            MsgType, res = 'text', "回复时间过长，超出微信接口响应时间，请等待几秒后重试或换一种方式提问，如在提问最后加上'回答不超过100字'"
-        else:
-            MsgType, res = 'text', '请稍等，大模型生成回答中...'
+        MsgType = 'text'
         xml += f'<MsgType><![CDATA[{MsgType}]]></MsgType>' \
                f'<Content><![CDATA[{res}]]></Content></xml>'
 
@@ -72,6 +65,15 @@ class Bot:
         response = make_response(xml)
         response.content_type = 'application/xml'
         return response
+
+    def post_time_out(self, count):
+        # 该函数用于响应用户输入
+        #返回要回答的消息类型和消息
+        if count == 3:
+            res = "回复时间过长，超出微信接口响应时间，请等待几秒后重试或换一种方式提问，如在提问最后加上'回答不超过100字'"
+        else:
+            res = '请稍等，大模型生成回答中...'
+        return res
 
 
     def post_receive(self, req):

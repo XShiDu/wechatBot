@@ -14,8 +14,8 @@ session = {}
 post_count = {}
 
 
-def apply(UserContent, ToUsere, FromUser):
-    res = bot.post_apply(UserContent, ToUsere, FromUser)
+def apply(UserContent):
+    res = bot.post_apply(UserContent)
     print(res)
     session[UserContent] = res
 
@@ -45,23 +45,23 @@ def index():
             if have_answer:
                 session.pop('UserContent')
                 post_count.pop('UserContent')
-                return have_answer
+                return bot.post_make_response(have_answer, ToUsere, FromUser)
             # 若没有生成答案
             else:
                 # 判定是不是最后一次请求
                 if have_post_count == 3:
-                    res = bot.post_time_out(3, ToUsere, FromUser)
+                    res = bot.post_make_response(bot.post_time_out(3), ToUsere, FromUser)
                     # 重置请求次数
                     post_count.pop('UserContent')
                 else:
-                    res = bot.post_time_out(have_post_count, ToUsere, FromUser)
+                    res = bot.post_make_response(bot.post_time_out(have_post_count), ToUsere, FromUser)
                     # 请求次数+1
                     post_count[UserContent] = have_post_count + 1
                 return res
         # 运行完了，那肯定已经缓存了答案，直接返回即可
         else:
             answer = session[UserContent]
-            return answer
+            return bot.post_make_response(answer, ToUsere, FromUser)
 
 
 if __name__ == "__main__":
