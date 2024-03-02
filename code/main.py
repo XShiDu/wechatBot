@@ -16,6 +16,7 @@ post_count = {}
 
 def apply(UserContent, ToUsere, FromUser):
     res = bot.post_apply(UserContent, ToUsere, FromUser)
+    print(res)
     session[UserContent] = res
 
 
