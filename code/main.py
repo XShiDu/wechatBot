@@ -10,6 +10,8 @@ with open('../api_config.yml', 'r', encoding='utf-8') as f:
 
 bot = Bot(apis)
 
+def apply(res):
+    bot.post_apply(res)
 
 app = Flask(__name__)
 
@@ -19,16 +21,7 @@ def index():
         return bot.get_apply(request)
 
     elif request.method == "POST":
-        # 开启一个新线程解决wx五秒不响应请求，失效的问题
-        sub_thread = threading.Thread(target=bot.post_apply(request))
-        sub_thread.start()
-        # 主线程等待子线程4秒
-        sub_thread.join(2)
-
-        if sub_thread.is_alive():
-            return bot.post_apply(request)
-        else:
-            return 'success'
+        return bot.post_apply(request)
 
 
 if __name__ == "__main__":
