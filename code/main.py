@@ -1,3 +1,5 @@
+import time
+
 from flask import Flask, make_response, request
 from chat_bot import Bot
 import yaml
@@ -53,11 +55,12 @@ def index():
                     res = bot.post_make_response(bot.post_time_out(3, UserContent), ToUsere, FromUser)
                     # 重置请求次数
                     post_count.pop(UserContent)
-                    return res
                 else:
-                    # res = bot.post_make_response(bot.post_time_out(have_post_count), ToUsere, FromUser)
+                    res = bot.post_make_response(bot.post_time_out(have_post_count, UserContent), ToUsere, FromUser)
                     # 请求次数+1
                     post_count[UserContent] = have_post_count + 1
+                    time.sleep(1)
+                return res
 
         # 运行完了，那肯定已经缓存了答案，直接返回即可
         else:
