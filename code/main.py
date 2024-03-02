@@ -53,12 +53,12 @@ def index():
                     res = bot.post_make_response(bot.post_time_out(3, UserContent), ToUsere, FromUser)
                     # 重置请求次数
                     post_count.pop(UserContent)
+                    return res
                 else:
                     # res = bot.post_make_response(bot.post_time_out(have_post_count), ToUsere, FromUser)
-                    res = 'success'
                     # 请求次数+1
                     post_count[UserContent] = have_post_count + 1
-                return res
+
         # 运行完了，那肯定已经缓存了答案，直接返回即可
         else:
             answer = session[UserContent]
