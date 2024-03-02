@@ -18,7 +18,6 @@ post_count = {}
 
 def apply(UserContent):
     res = bot.post_apply(UserContent)
-    print(res)
     session[UserContent] = res
 
 
@@ -31,41 +30,68 @@ def index():
 
     elif request.method == "POST":
         UserContent, ToUsere, FromUser = bot.post_receive(request)
-        # 创建子线程，如果没来得及处理，就主线程先回复，子线程将处理结果加入session
-        sub_thread = threading.Thread(target=apply, args=(UserContent,))
-        sub_thread.start()
 
-        # 主线程等待子线程4秒
-        sub_thread.join(4)
+        # 先判定前面的请求有没有生成回答
+        front_answer = session.get(UserContent, '')
+        front_post_count = post_count.get(UserContent, 0)
+        if front_answer:
+            # 清楚缓存
+            session.pop(UserContent)
+            return bot.post_make_response(front_answer, ToUsere, FromUser)
 
-        # 若此回复四秒内运行不完
-        if sub_thread.is_alive():
-            #检测是否生成了回复，以及该提问请求的次数
-            have_answer = session.get(UserContent, '')
-            have_post_count = post_count.get(UserContent, 1)
-            # 如果前面的请求已经生成了答案
-            if have_answer:
+        # 如果是第一次请求, post_count无该问题缓存
+        if front_post_count == 0:
+            # 创建子线程，如果没来得及处理，就主线程不回复，直接超时，等待微信重复请求，子线程继续处理，结果加入session
+            sub_thread = threading.Thread(target=apply, args=(UserContent,))
+            sub_thread.start()
+            # 主线程等待子线程4秒
+            sub_thread.join(4)
+            # 若此回复四秒内运行不完
+            if sub_thread.is_alive():
+                # 那么等待请求过期
+                post_count[UserContent] = 1
+                res = bot.post_time_out(0, UserContent)
+                time.sleep(1)
+            # 若运行完了
+            else:
+                # 提取运行结果
+                res = session[UserContent]
+                # 清除缓存
+                session.pop(UserContent)
+            return bot.post_make_response(res, ToUsere, FromUser)
+        # 是第二次请求，第一次过期了
+        elif front_post_count == 1:
+            # 等待4s
+            time.sleep(4)
+            # 判定第一次请求子线程结果有没有
+            if UserContent in session:
+                # 提取运行结果
+                res = session[UserContent]
+                # 清除缓存
                 session.pop(UserContent)
                 post_count.pop(UserContent)
-                return bot.post_make_response(have_answer, ToUsere, FromUser)
-            # 若没有生成答案
             else:
-                # 判定是不是最后一次请求
-                if have_post_count == 3:
-                    res = bot.post_make_response(bot.post_time_out(3, UserContent), ToUsere, FromUser)
-                    # 重置请求次数
-                    post_count.pop(UserContent)
-                else:
-                    res = bot.post_make_response(bot.post_time_out(have_post_count, UserContent), ToUsere, FromUser)
-                    # 请求次数+1
-                    post_count[UserContent] = have_post_count + 1
-                    time.sleep(1)
-                return res
-
-        # 运行完了，那肯定已经缓存了答案，直接返回即可
+                post_count[UserContent] = 2
+                res = bot.post_time_out(1, UserContent)
+                time.sleep(1)
+            return bot.post_make_response(res, ToUsere, FromUser)
+        # 是第三次请求了， 第二次请求期间没有得到响应，不管有没有，都返回答案
         else:
-            answer = session[UserContent]
-            return bot.post_make_response(answer, ToUsere, FromUser)
+            # 等待4s
+            time.sleep(4)
+            # 判定第一次请求子线程结果有没有
+            if UserContent in session:
+                # 提取运行结果
+                res = session[UserContent]
+                # 清除缓存
+                session.pop(UserContent)
+            else:
+                res = bot.post_time_out(2, UserContent)
+            # 最后一次请求，清除请求计数缓存
+            post_count.pop(UserContent)
+            return bot.post_make_response(res, ToUsere, FromUser)
+
+
 
 
 if __name__ == "__main__":
