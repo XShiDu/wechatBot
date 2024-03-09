@@ -1,13 +1,12 @@
 import time
-
-from flask import Flask, make_response, request
+from flask import Flask, request
 from chat_bot import Bot
 import yaml
-from lxml import etree
 import threading
 
-with open('../api_config.yml', 'r', encoding='utf-8') as f:
+with open('../api_config.yaml', 'r', encoding='utf-8') as f:
     apis = yaml.load(f.read(), Loader=yaml.FullLoader)
+f.close()
 
 bot = Bot(apis)
 # 若时间不过，用于缓存用户的提问和结果(微信三次重复请求中，只有content是一致的，且用户间是区分性质的)
@@ -35,7 +34,7 @@ def index():
         front_answer = session.get(UserContent, '')
         front_post_count = post_count.get(UserContent, 0)
         if front_answer:
-            # 清楚缓存
+            # 清除缓存
             session.pop(UserContent)
             return bot.post_make_response(front_answer, ToUsere, FromUser)
 
