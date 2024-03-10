@@ -1,10 +1,11 @@
 from zhipuai import ZhipuAI
-from utils import get_stock_industry
+from random import choice
+from utils import get_stock_industry, get_company_info, get_stock_index, get_history_manager, get_history_director
 
 class ChatBot():
     def __init__(self, apis):
         self.model = apis['model_params']['model']
-        self.api_key=apis['model_params']['api_key']
+        self.api_key=choice(apis['model_params']['api_key'])['key']
         self.init_prompt = apis['model_params']['init_prompt']
 
         self.message = [
@@ -29,7 +30,91 @@ class ChatBot():
                             "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
                         },
                     },
-                    "required": ["code", "iscode", "date"],
+                    "required": ["code", "iscode"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_company_info",
+                "description": "根据用户提供的信息，查询股票对应的公司简介、基本信息",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                    },
+                    "required": ["code", "iscode"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_stock_index",
+                "description": "根据用户提供的信息，查询股票对应的所属指数",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                    },
+                    "required": ["code", "iscode"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_history_manager",
+                "description": "根据用户提供的信息，查询股票对应公司的高管信息、历届高管成员",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                    },
+                    "required": ["code", "iscode"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_history_director",
+                "description": "根据用户提供的信息，查询股票对应公司的董事信息、历届董事会成员",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                    },
+                    "required": ["code", "iscode"],
                 },
             }
         }
@@ -49,15 +134,19 @@ class ChatBot():
         if response.choices[0].message.tool_calls:
             func = response.choices[0].message.tool_calls[0].function.name
             arg = response.choices[0].message.tool_calls[0].function.arguments
+            # id = response.choices[0].message.tool_calls[0].id
             content_clsass, res = eval(func)(**eval(arg))
+            # self.message.append({"role": "tool", "content": res, "tool_call_id":id})
+            self.message.pop(-1)
         else:
             res = response.choices[0].message.content
             content_clsass = 'text'
-        self.message.append({"role": "assistant", "content": res})
+            self.message.append({"role": "assistant", "content": res})
         return content_clsass, res
 
     def chat(self, input):
         self.get_user(input)
         content_clsass, res = self.get_response()
+        # print(self.message)
 
         return content_clsass, res
