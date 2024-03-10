@@ -1,6 +1,7 @@
 from zhipuai import ZhipuAI
 from random import choice
 from utils import get_stock_industry, get_company_info, get_stock_index, get_history_manager, get_history_director
+from utils import get_history_supervisors, get_history_share, get_history_seo, restrict_stock_open
 
 class ChatBot():
     def __init__(self, apis):
@@ -115,6 +116,114 @@ class ChatBot():
                         },
                     },
                     "required": ["code", "iscode"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_history_supervisors",
+                "description": "根据用户提供的信息，查询股票对应公司的监事信息、历届监事会成员",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                    },
+                    "required": ["code", "iscode"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_history_share",
+                "description": "根据用户提供的信息，查询股票对应的公司近年的分红情况，当前为2024年",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                        "start_year": {
+                            "type": "string",
+                            "description": "要查询的开始时间的年份，如2023",
+                        },
+                        "end_year": {
+                            "type": "string",
+                            "description": "要查询的结束时间的年份，如2024",
+                        },
+                    },
+                    "required": ["code", "iscode", "start_year", "end_year"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_history_seo",
+                "description": "根据用户提供的信息，查询股票对应的公司近年的增发情况，当前为2024年",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                        "start_year": {
+                            "type": "string",
+                            "description": "要查询的开始时间的年份，如2023",
+                        },
+                        "end_year": {
+                            "type": "string",
+                            "description": "要查询的结束时间的年份，如2024",
+                        },
+                    },
+                    "required": ["code", "iscode", "start_year", "end_year"],
+                },
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "restrict_stock_open",
+                "description": "根据用户提供的信息，查询股票对应的公司近年的解禁限售情况，当前为2024年",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "string",
+                            "description": "股票名称或代码",
+                        },
+                        "iscode": {
+                            "type": "string",
+                            "description": "判断是股票名称还是股票代码，是股票代码时为1，是股票名称时为0",
+                        },
+                        "start_year": {
+                            "type": "string",
+                            "description": "要查询的开始时间的年份，如2023",
+                        },
+                        "end_year": {
+                            "type": "string",
+                            "description": "要查询的结束时间的年份，如2024",
+                        },
+                    },
+                    "required": ["code", "iscode", "start_year", "end_year"],
                 },
             }
         }

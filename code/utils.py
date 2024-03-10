@@ -142,4 +142,134 @@ def get_history_director(code, iscode):
     else:
         return 'text', '获取失败，请输入正确的代码或股票名称，或联系管理员查看接口是否正确'
 
-# print(get_history_director('大理药业', '0'))
+def get_history_supervisors(code, iscode):
+
+    with open('../data/stocksNameCode.yml', 'r', encoding='utf-8') as f:
+        stock_map = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+    with open('../api_config.yaml', 'r', encoding='utf-8') as f:
+        apis = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+
+    if iscode == '0':
+        code = stock_map[code]
+
+    url = f"{apis['stock_params']['history_supervisors']}/{code}/{apis['stock_params']['licence']}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        history = json.loads(response.text)
+        res = f'{code}的在职监事会成员包括：\n'
+        now = datetime.now().strftime('%Y-%m-%d')
+        for director in history:
+            if director['edate'] > now:
+                res += f"{director['title']}:{director['name']} {director['sdate']}~{director['edate']}\n"
+        return 'text', res,
+    else:
+        return 'text', '获取失败，请输入正确的代码或股票名称，或联系管理员查看接口是否正确'
+
+def get_history_share(code, iscode, start_year=None, end_year=None):
+
+    with open('../data/stocksNameCode.yml', 'r', encoding='utf-8') as f:
+        stock_map = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+    with open('../api_config.yaml', 'r', encoding='utf-8') as f:
+        apis = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+
+    if iscode == '0':
+        code = stock_map[code]
+    if not start_year:
+        cur_year = datetime.now().year
+        start_year = str(cur_year - 1)
+        end_year = str(cur_year)
+
+    url = f"{apis['stock_params']['history_share']}/{code}/{apis['stock_params']['licence']}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        history = json.loads(response.text)
+        if start_year == end_year:
+            res = f'{code}的{start_year}年分红如下：\n'
+        else:
+            res = f'{code}的{start_year}年~{end_year}年分红如下：\n'
+        for share in history:
+            if start_year <= share['sdate'][:4] <= end_year:
+                res += f"公告日期：{share['sdate']}\n每10股送股:{share['give']}股\n每10股转增:{share['change']}股\n" \
+                       f"每10股派息：{share['send']}元\n进度：{share['line']}\n除权除息日:{share['cdate']}\n" \
+                       f"股权登记日：{share['edate']}\n红股上市日：{share['hdate']}\n\n"
+        if "公告日期" not in res: res += '无'
+        return 'text', res,
+    else:
+        return 'text', '获取失败，请输入正确的代码或股票名称，或联系管理员查看接口是否正确'
+
+def get_history_seo(code, iscode, start_year=None, end_year=None):
+
+    with open('../data/stocksNameCode.yml', 'r', encoding='utf-8') as f:
+        stock_map = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+    with open('../api_config.yaml', 'r', encoding='utf-8') as f:
+        apis = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+
+    if iscode == '0':
+        code = stock_map[code]
+    if not start_year:
+        cur_year = datetime.now().year
+        start_year = str(cur_year - 1)
+        end_year = str(cur_year)
+
+    url = f"{apis['stock_params']['history_SEO']}/{code}/{apis['stock_params']['licence']}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        history = json.loads(response.text)
+        if start_year == end_year:
+            res = f'{code}的{start_year}年增发如下：\n'
+        else:
+            res = f'{code}的{start_year}年~{end_year}年增发如下：\n'
+        for share in history:
+            if start_year <= share['sdate'][:4] <= end_year:
+                res += f"公告日期：{share['sdate']}\n发行方式:{share['type']}\n发行价格:{share['price']}元\n" \
+                       f"实际公司募集资金总额：{share['tprice']}元\n发行费用总额：{share['fprice']}\n" \
+                       f"实际发行数量:{share['amount']}\n\n"
+        if "公告日期" not in res: res += '无'
+        return 'text', res,
+    else:
+        return 'text', '获取失败，请输入正确的代码或股票名称，或联系管理员查看接口是否正确'
+
+def restrict_stock_open(code, iscode, start_year=None, end_year=None):
+
+    with open('../data/stocksNameCode.yml', 'r', encoding='utf-8') as f:
+        stock_map = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+    with open('../api_config.yaml', 'r', encoding='utf-8') as f:
+        apis = yaml.load(f.read(), Loader=yaml.FullLoader)
+    f.close()
+
+    if iscode == '0':
+        code = stock_map[code]
+    if not start_year:
+        cur_year = datetime.now().year
+        start_year = str(cur_year - 1)
+        end_year = str(cur_year)
+
+    url = f"{apis['stock_params']['restrict_stock_open']}/{code}/{apis['stock_params']['licence']}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        history = json.loads(response.text)
+        if start_year == end_year:
+            res = f'{code}的{start_year}年解禁限售如下：\n'
+        else:
+            res = f'{code}的{start_year}年~{end_year}年解禁限售如下：\n'
+        for share in history:
+            if start_year <= share['rdate'][:4] <= end_year:
+                res += f"解禁日期：{share['rdate']}\n解禁数量(万股):{share['ramount']}\n解禁股流通市值(亿元):" \
+                       f"{share['rprice']}\n上市批次：{share['batch']}\n公告日期：{share['pdate']}\n\n"
+        if "公告日期" not in res: res += '无'
+        return 'text', res,
+    else:
+        return 'text', '获取失败，请输入正确的代码或股票名称，或联系管理员查看接口是否正确'
+
+print(restrict_stock_open('大理药业', '0', '2021', '2024')[1])
